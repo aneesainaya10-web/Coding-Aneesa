@@ -3,14 +3,20 @@ import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import ThreeScene from './ThreeScene';
 
-export default function HeroSection() {
-  const glowRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [trail, setTrail] = useState([]);
+type Trail = {
+  x: number;
+  y: number;
+  id: number;
+};
 
-  // CURSOR EFFECT (wine elegant)
+export default function HeroSection() {
+  const glowRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [trail, setTrail] = useState<Trail[]>([]);
+
+  // CURSOR EFFECT
   useEffect(() => {
-    const move = (e) => {
+    const move = (e: MouseEvent) => {
       if (glowRef.current) {
         glowRef.current.style.left = e.clientX + 'px';
         glowRef.current.style.top = e.clientY + 'px';
@@ -29,10 +35,18 @@ export default function HeroSection() {
   // BACKGROUND CANVAS
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas?.getContext('2d');
 
-    let stars = [];
-    let animationId;
+    if (!canvas || !ctx) return;
+
+    let stars: {
+      x: number;
+      y: number;
+      size: number;
+      speed: number;
+    }[] = [];
+
+    let animationId: number;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -91,7 +105,7 @@ export default function HeroSection() {
       {/* CANVAS */}
       <canvas ref={canvasRef} className="absolute inset-0 -z-20" />
 
-      {/* SOFT GLOW BACKGROUND */}
+      {/* BACKGROUND GLOW */}
       <div className="absolute w-[600px] h-[600px] bg-[#7a1f1f]/30 rounded-full blur-[150px] top-[-150px] left-[-150px]" />
       <div className="absolute w-[500px] h-[500px] bg-[#4a1414]/30 rounded-full blur-[120px] bottom-[-150px] right-[-150px]" />
 
@@ -120,7 +134,7 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 relative z-30">
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
 
-          {/* IMAGE (BESAR & ROUND CLASSY) */}
+          {/* IMAGE */}
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
@@ -128,12 +142,9 @@ export default function HeroSection() {
           >
             <div className="relative group">
 
-              {/* GLOW FRAME */}
               <div className="absolute -inset-6 rounded-full blur-3xl opacity-70 bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d]" />
 
-              {/* BORDER FRAME */}
               <div className="relative p-[6px] rounded-full bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d] shadow-2xl">
-
                 <div className="w-[300px] h-[300px] md:w-[420px] md:h-[420px] rounded-full overflow-hidden bg-white/10 backdrop-blur-xl border border-white/10">
                   <img
                     src="/ade.jpg"
@@ -141,8 +152,8 @@ export default function HeroSection() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-
               </div>
+
             </div>
           </motion.div>
 
@@ -156,16 +167,16 @@ export default function HeroSection() {
             </span>
 
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-              <span className="text-[#2a0d0d]">Hello there</span>
+              <span className="text-[#2a0d0d]">𝐀𝐧𝐞𝐞𝐬𝐚'𝐬</span>
               <br />
               <span className="bg-gradient-to-r from-[#7a1f1f] via-[#a52a2a] to-[#4a1414] bg-clip-text text-transparent">
-                Aneesa Inaya ✨
+                𝐏𝐨𝐫𝐭𝐨𝐟𝐨𝐥𝐢𝐨
               </span>
             </h1>
 
             <p className="mt-6 max-w-xl text-lg text-[#4a1414]">
               🍷 Every small project is a step toward
-              <span className="text-[#7a1f1f] font-semibold"> creativity, elegance, </span>
+              <span className="text-[#7a1f1f] font-semibold"> creativity, elegance </span>
               and building a meaningful digital journey.
             </p>
 
@@ -183,7 +194,7 @@ export default function HeroSection() {
                 className="px-8 py-3 rounded-full font-semibold text-[#7a1f1f] 
                 bg-white/20 backdrop-blur-xl border border-white/20 hover:bg-white/30 transition"
               >
-                💌 Contact
+                💌 My Contact
               </a>
             </div>
 
