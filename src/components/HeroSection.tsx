@@ -1,124 +1,206 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, Github, Linkedin, Youtube, Instagram } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowDown } from 'lucide-react';
 import ThreeScene from './ThreeScene';
 
 export default function HeroSection() {
+  const glowRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [trail, setTrail] = useState([]);
+
+  // CURSOR EFFECT (wine elegant)
+  useEffect(() => {
+    const move = (e) => {
+      if (glowRef.current) {
+        glowRef.current.style.left = e.clientX + 'px';
+        glowRef.current.style.top = e.clientY + 'px';
+      }
+
+      setTrail((prev) => [
+        ...prev.slice(-15),
+        { x: e.clientX, y: e.clientY, id: Date.now() }
+      ]);
+    };
+
+    window.addEventListener('mousemove', move);
+    return () => window.removeEventListener('mousemove', move);
+  }, []);
+
+  // BACKGROUND CANVAS
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    let stars = [];
+    let animationId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5,
+        speed: Math.random() * 0.25
+      });
+    }
+
+    const animate = () => {
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+
+      gradient.addColorStop(0, '#2a0d0d');
+      gradient.addColorStop(0.5, '#4a1414');
+      gradient.addColorStop(1, '#7a1f1f');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach((star) => {
+        star.y += star.speed;
+        if (star.y > canvas.height) star.y = 0;
+
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+      });
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
   const scrollToAbout = () => {
-    const element = document.querySelector('#about');
-    if (element) element.scrollIntoView({ behavior: 'smooth' });
+    const el = document.querySelector('#about');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-pink-100 to-rose-200">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
-      {/* 🌸 Blur Glow Background */}
-      <div className="absolute w-[500px] h-[500px] bg-pink-300/40 rounded-full blur-[120px] top-[-100px] left-[-100px]" />
-      <div className="absolute w-[400px] h-[400px] bg-rose-300/40 rounded-full blur-[100px] bottom-[-100px] right-[-100px]" />
+      {/* CANVAS */}
+      <canvas ref={canvasRef} className="absolute inset-0 -z-20" />
 
-      {/* subtle overlay */}
-      <div className="absolute inset-0 backdrop-blur-[2px]" />
+      {/* SOFT GLOW BACKGROUND */}
+      <div className="absolute w-[600px] h-[600px] bg-[#7a1f1f]/30 rounded-full blur-[150px] top-[-150px] left-[-150px]" />
+      <div className="absolute w-[500px] h-[500px] bg-[#4a1414]/30 rounded-full blur-[120px] bottom-[-150px] right-[-150px]" />
+
+      {/* CURSOR GLOW */}
+      <div
+        ref={glowRef}
+        className="pointer-events-none fixed w-80 h-80 rounded-full 
+        bg-gradient-to-br from-[#7a1f1f]/20 via-[#4a1414]/20 to-[#2a0d0d]/20
+        blur-3xl -translate-x-1/2 -translate-y-1/2 z-10"
+      />
+
+      {/* CURSOR TRAIL */}
+      {trail.map((t) => (
+        <motion.div
+          key={t.id}
+          className="pointer-events-none fixed w-2 h-2 rounded-full bg-[#7a1f1f]/80 blur-[2px] z-20"
+          style={{ left: t.x, top: t.y }}
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 0, scale: 3 }}
+          transition={{ duration: 0.6 }}
+        />
+      ))}
 
       <ThreeScene />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+      <div className="container mx-auto px-4 relative z-30">
+        <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
 
-          {/* Badge */}
-          <motion.span
-            className="inline-block px-5 py-2 rounded-full bg-white/60 backdrop-blur-xl text-pink-500 text-sm font-medium mb-6 shadow-md border border-white/40"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+          {/* IMAGE (BESAR & ROUND CLASSY) */}
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex justify-center md:justify-end"
           >
-            ✨ Welcome to my portfolio
-          </motion.span>
+            <div className="relative group">
 
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-gray-800 leading-tight"
-          >
-            Hello there
-            <br />
-            <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-pink-600 bg-clip-text text-transparent drop-shadow-md">
-              with Aneesa here ✨
+              {/* GLOW FRAME */}
+              <div className="absolute -inset-6 rounded-full blur-3xl opacity-70 bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d]" />
+
+              {/* BORDER FRAME */}
+              <div className="relative p-[6px] rounded-full bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d] shadow-2xl">
+
+                <div className="w-[300px] h-[300px] md:w-[420px] md:h-[420px] rounded-full overflow-hidden bg-white/10 backdrop-blur-xl border border-white/10">
+                  <img
+                    src="/ade.jpg"
+                    alt="Aneesa"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+              </div>
+            </div>
+          </motion.div>
+
+          {/* TEXT */}
+          <div className="text-center md:text-left">
+
+            <span className="inline-block px-5 py-2 rounded-full 
+            bg-gradient-to-r from-[#7a1f1f] to-[#4a1414]
+            text-white text-xs font-semibold mb-6 tracking-wider shadow-lg">
+              ✨ WELCOME ✨
             </span>
-          </motion.h1>
 
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed"
-          >
-            I created this space to share who I am, what I build, and what I love.
-            Take your time to explore and discover more about me 💫
-          </motion.p>
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              <span className="text-[#2a0d0d]">Hello there</span>
+              <br />
+              <span className="bg-gradient-to-r from-[#7a1f1f] via-[#a52a2a] to-[#4a1414] bg-clip-text text-transparent">
+                Aneesa Inaya ✨
+              </span>
+            </h1>
 
-          {/* Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14"
-          >
-            <Button
-              size="lg"
-              className="rounded-full px-8 bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg backdrop-blur-lg hover:scale-105 transition"
-              onClick={() => {
-                const el = document.querySelector('#projects');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              ✨ View Projects
-            </Button>
+            <p className="mt-6 max-w-xl text-lg text-[#4a1414]">
+              🍷 Every small project is a step toward
+              <span className="text-[#7a1f1f] font-semibold"> creativity, elegance, </span>
+              and building a meaningful digital journey.
+            </p>
 
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full px-8 border-white/40 text-pink-500 bg-white/40 backdrop-blur-xl hover:bg-white/60 transition"
-              onClick={() => {
-                const el = document.querySelector('#contact');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              💌 Contact Me
-            </Button>
-          </motion.div>
-
-          {/* Social Icons */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="flex justify-center gap-6"
-          >
-            {[Github, Linkedin, Youtube, Instagram].map((Icon, i) => (
-              <motion.a
-                key={i}
-                href="#"
-                className="p-3 rounded-full bg-white/50 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-lg hover:bg-white/70 transition"
-                whileHover={{ scale: 1.15, y: -3 }}
+            <div className="flex gap-4 mt-10 justify-center md:justify-start">
+              <button
+                onClick={scrollToAbout}
+                className="px-8 py-3 rounded-full text-white font-semibold 
+                bg-gradient-to-r from-[#7a1f1f] to-[#4a1414] shadow-lg hover:scale-105 transition"
               >
-                <Icon className="h-5 w-5 text-pink-500" />
-              </motion.a>
-            ))}
-          </motion.div>
+                🚀 Explore
+              </button>
+
+              <a
+                href="#"
+                className="px-8 py-3 rounded-full font-semibold text-[#7a1f1f] 
+                bg-white/20 backdrop-blur-xl border border-white/20 hover:bg-white/30 transition"
+              >
+                💌 Contact
+              </a>
+            </div>
+
+          </div>
 
         </div>
       </div>
 
-      {/* Scroll Button */}
+      {/* SCROLL */}
       <motion.button
         onClick={scrollToAbout}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 p-3 rounded-full bg-white/50 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-lg transition"
-        whileHover={{ scale: 1.1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 p-3 rounded-full 
+        bg-white/10 backdrop-blur-xl border border-white/20 shadow-md z-30"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
       >
-        <ArrowDown className="h-5 w-5 text-pink-500 animate-bounce" />
+        <ArrowDown className="text-[#7a1f1f] w-6 h-6" />
       </motion.button>
     </section>
   );
