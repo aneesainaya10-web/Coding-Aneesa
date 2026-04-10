@@ -30,9 +30,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (element) element.scrollIntoView({ behavior: 'smooth' });
     setIsMobileMenuOpen(false);
   };
 
@@ -40,25 +38,45 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'glass-strong shadow-card' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled ? 'backdrop-blur-xl shadow-lg' : ''
       }`}
     >
+      {/* 🍷 BACKGROUND */}
+      <div
+        className={`absolute inset-0 -z-10 ${
+          isDark
+            ? 'bg-gradient-to-r from-black via-[#1a0505] to-[#4a1414]'
+            : 'bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#ffe4e6]'
+        }`}
+      />
+
+      {/* OVERLAY */}
+      <div
+        className={`absolute inset-0 -z-10 ${
+          isDark ? 'bg-black/50' : 'bg-white/20'
+        }`}
+      />
+
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
+
+          {/* LOGO */}
           <motion.a
             href="#home"
             onClick={(e) => {
               e.preventDefault();
               scrollToSection('#home');
             }}
-            className="font-display text-xl md:text-2xl font-bold text-gradient cursor-pointer"
+            className={`font-display text-xl md:text-2xl font-bold cursor-pointer drop-shadow ${
+              isDark ? 'text-[#fca5a5]' : 'text-[#2a0d0d]'
+            }`}
             whileHover={{ scale: 1.05 }}
           >
-            &lt;Neesa's &gt;
+            Neesa's
           </motion.a>
 
-          {/* Desktop Navigation */}
+          {/* DESKTOP */}
           <div className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
               <motion.a
@@ -68,17 +86,23 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                   e.preventDefault();
                   scrollToSection(item.href);
                 }}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium cursor-pointer"
+                className={`font-medium transition cursor-pointer ${
+                  isDark
+                    ? 'text-[#fca5a5] hover:text-[#fecaca]'
+                    : 'text-[#2a0d0d] hover:text-[#7a1f1f]'
+                }`}
                 whileHover={{ y: -2 }}
               >
                 {item.label}
               </motion.a>
             ))}
+
+            {/* THEME BUTTON */}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="rounded-full"
+              className="rounded-full bg-black/10 hover:bg-black/20"
             >
               <AnimatePresence mode="wait">
                 {isDark ? (
@@ -88,7 +112,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
                   >
-                    <Sun className="h-5 w-5" />
+                    <Sun className="h-5 w-5 text-yellow-400" />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -97,42 +121,44 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: -90, opacity: 0 }}
                   >
-                    <Moon className="h-5 w-5" />
+                    <Moon className="h-5 w-5 text-[#2a0d0d]" />
                   </motion.div>
                 )}
               </AnimatePresence>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* MOBILE */}
           <div className="flex items-center gap-2 md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              {isDark ? (
+                <Sun className="h-5 w-5 text-yellow-400" />
+              ) : (
+                <Moon className="h-5 w-5 text-[#2a0d0d]" />
+              )}
             </Button>
+
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? <X /> : <Menu />}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass-strong border-t border-border"
+            className={`md:hidden backdrop-blur-xl ${
+              isDark ? 'bg-black/80' : 'bg-[#7a1f1f]/90'
+            }`}
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
               {navItems.map((item) => (
@@ -143,7 +169,11 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                     e.preventDefault();
                     scrollToSection(item.href);
                   }}
-                  className="text-muted-foreground hover:text-foreground transition-colors font-medium py-2"
+                  className={`font-medium py-2 ${
+                    isDark
+                      ? 'text-[#fca5a5] hover:text-[#fecaca]'
+                      : 'text-[#2a0d0d] hover:text-[#ffe4e6]'
+                  }`}
                 >
                   {item.label}
                 </a>

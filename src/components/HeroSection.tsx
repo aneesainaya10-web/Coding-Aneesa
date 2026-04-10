@@ -148,8 +148,8 @@ export default function HeroSection() {
                 <div className="w-full h-full rounded-full overflow-hidden 
                 bg-white/10 backdrop-blur-xl border border-white/10">
                   <img
-                    src="/nafis.jpg" // ⬅️ TARUH GAMBAR DI PUBLIC
-                    alt="Aneesa"
+                    src="/public/Aneesa.jpg"
+                                        alt="Aneesa"
                     className="w-full h-full object-cover hover:scale-110 transition duration-500"
                   />
                 </div>
