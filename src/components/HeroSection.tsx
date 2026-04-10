@@ -39,13 +39,7 @@ export default function HeroSection() {
 
     if (!canvas || !ctx) return;
 
-    let stars: {
-      x: number;
-      y: number;
-      size: number;
-      speed: number;
-    }[] = [];
-
+    let stars: any[] = [];
     let animationId: number;
 
     const resize = () => {
@@ -134,26 +128,33 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 relative z-30">
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
 
-          {/* IMAGE */}
+          {/* FOTO BULAT PERFECT */}
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex justify-center md:justify-end"
           >
-            <div className="relative group">
+            <div className="relative w-[300px] h-[300px] md:w-[420px] md:h-[420px]">
 
-              <div className="absolute -inset-6 rounded-full blur-3xl opacity-70 bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d]" />
+              {/* GLOW */}
+              <div className="absolute inset-0 rounded-full blur-3xl opacity-70 
+              bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d]" />
 
-              <div className="relative p-[6px] rounded-full bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d] shadow-2xl">
-                <div className="w-[300px] h-[300px] md:w-[420px] md:h-[420px] rounded-full overflow-hidden bg-white/10 backdrop-blur-xl border border-white/10">
+              {/* BORDER */}
+              <div className="relative p-[6px] rounded-full 
+              bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d] shadow-2xl">
+
+                {/* IMAGE */}
+                <div className="w-full h-full rounded-full overflow-hidden 
+                bg-white/10 backdrop-blur-xl border border-white/10">
                   <img
-                    src="/ade.jpg"
+                    src="/nafis.jpg" // ⬅️ TARUH GAMBAR DI PUBLIC
                     alt="Aneesa"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
                   />
                 </div>
-              </div>
 
+              </div>
             </div>
           </motion.div>
 
@@ -199,7 +200,6 @@ export default function HeroSection() {
             </div>
 
           </div>
-
         </div>
       </div>
 
