@@ -1,119 +1,74 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
-import ThreeScene from './ThreeScene';
-
-type Trail = {
-  x: number;
-  y: number;
-  id: number;
-};
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 
 export default function HeroSection() {
-  const glowRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [trail, setTrail] = useState<Trail[]>([]);
+  const glowRef = useRef(null);
+  const [trail, setTrail] = useState([]);
 
-  // CURSOR EFFECT
   useEffect(() => {
-    const move = (e: MouseEvent) => {
-      if (glowRef.current) {
-        glowRef.current.style.left = e.clientX + 'px';
-        glowRef.current.style.top = e.clientY + 'px';
-      }
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const move = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
 
       setTrail((prev) => [
-        ...prev.slice(-15),
-        { x: e.clientX, y: e.clientY, id: Date.now() }
+        ...prev.slice(-10),
+        { x: e.clientX, y: e.clientY, id: Date.now() },
       ]);
     };
 
-    window.addEventListener('mousemove', move);
-    return () => window.removeEventListener('mousemove', move);
-  }, []);
-
-  // BACKGROUND CANVAS
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-
-    if (!canvas || !ctx) return;
-
-    let stars: any[] = [];
-    let animationId: number;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    for (let i = 0; i < 120; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5,
-        speed: Math.random() * 0.25
-      });
-    }
-
     const animate = () => {
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#2a0d0d');
-      gradient.addColorStop(0.5, '#4a1414');
-      gradient.addColorStop(1, '#7a1f1f');
+      currentX += (mouseX - currentX) * 0.08;
+      currentY += (mouseY - currentY) * 0.08;
 
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (glowRef.current) {
+        glowRef.current.style.left = currentX + "px";
+        glowRef.current.style.top = currentY + "px";
+      }
 
-      stars.forEach((star) => {
-        star.y += star.speed;
-        if (star.y > canvas.height) star.y = 0;
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.fillRect(star.x, star.y, star.size, star.size);
-      });
-
-      animationId = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     };
 
+    window.addEventListener("mousemove", move);
     animate();
 
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationId);
-    };
+    return () => window.removeEventListener("mousemove", move);
   }, []);
 
   const scrollToAbout = () => {
-    const el = document.querySelector('#about');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    const el = document.querySelector("#about");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      
-      {/* CANVAS */}
-      <canvas ref={canvasRef} className="absolute inset-0 -z-20" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-24 md:py-32">
 
-      {/* BACKGROUND GLOW */}
-      <div className="absolute w-[600px] h-[600px] bg-[#7a1f1f]/30 rounded-full blur-[150px] top-[-150px] left-[-150px]" />
-      <div className="absolute w-[500px] h-[500px] bg-[#4a1414]/30 rounded-full blur-[120px] bottom-[-150px] right-[-150px]" />
+      {/* BACKGROUND (same as SkillsSection) */}
+      <div className="absolute inset-0 -z-20 
+      bg-gradient-to-b from-[#140303] via-[#2a0a0a] to-[#140303]" />
+
+      {/* GLOW ORBS */}
+      <div className="absolute w-[600px] h-[600px] bg-[#7a1f1f]/20 rounded-full blur-[170px] top-[-200px] left-[-200px]" />
+      <div className="absolute w-[500px] h-[500px] bg-[#4a1414]/25 rounded-full blur-[150px] bottom-[-200px] right-[-150px]" />
 
       {/* CURSOR GLOW */}
       <div
         ref={glowRef}
-        className="pointer-events-none fixed w-80 h-80 rounded-full 
-        bg-gradient-to-br from-[#7a1f1f]/20 via-[#4a1414]/20 to-[#2a0d0d]/20
-        blur-3xl -translate-x-1/2 -translate-y-1/2 z-10"
+        className="pointer-events-none fixed w-96 h-96 rounded-full 
+        bg-[radial-gradient(circle,rgba(122,31,31,0.35)_0%,rgba(42,10,10,0.2)_40%,transparent_70%)]
+        blur-[90px] -translate-x-1/2 -translate-y-1/2 z-10"
       />
 
-      {/* CURSOR TRAIL */}
+      {/* TRAIL */}
       {trail.map((t) => (
         <motion.div
           key={t.id}
-          className="pointer-events-none fixed w-2 h-2 rounded-full bg-[#7a1f1f]/80 blur-[2px] z-20"
+          className="pointer-events-none fixed w-2 h-2 rounded-full bg-[#b76e79]/70 blur-[2px]"
           style={{ left: t.x, top: t.y }}
           initial={{ opacity: 1, scale: 1 }}
           animate={{ opacity: 0, scale: 3 }}
@@ -121,106 +76,96 @@ export default function HeroSection() {
         />
       ))}
 
-      <ThreeScene />
+      <div className="container mx-auto px-4 relative z-20 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
 
-      <div className="container mx-auto px-4 relative z-30">
-        <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        {/* TEXT SECTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="text-center md:text-left"
+        >
+          <span className="inline-block px-5 py-2 rounded-full 
+          bg-gradient-to-r from-[#2a0a0a] to-[#140303]
+          text-[#e8b4b8] text-xs font-bold tracking-[0.2em] mb-6 uppercase shadow-lg border border-[#7a1f1f]/30">
+            ✨ Welcome ✨
+          </span>
 
-          {/* FOTO BULAT - PERBAIKAN DI SINI */}
-          <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex justify-center md:justify-end order-1 md:order-2"
-          >
-            <div className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] lg:w-[420px] lg:h-[420px]">
-              
-              {/* GLOW EFFECT AROUND PHOTO */}
-              <div className="absolute inset-0 rounded-full blur-3xl opacity-60 
-              bg-gradient-to-r from-[#7a1f1f] via-[#4a1414] to-[#2a0d0d] scale-110" />
+          <h1 className="text-5xl md:text-7xl font-black text-[#f8d7da] leading-tight">
+            <span className="opacity-90">𝐀𝐧𝐞𝐞𝐬𝐚'𝐬 </span>
+            <br />
+            <span className="bg-gradient-to-r from-[#b76e79] via-[#e8b4b8] to-[#f5c6c9] bg-clip-text text-transparent">
+              𝓟𝓸𝓻𝓽𝓸𝓯𝓸𝓵𝓲𝓸
+            </span>
+          </h1>
 
-              {/* GRADIENT BORDER */}
-              <div className="relative w-full h-full p-[5px] rounded-full 
-              bg-gradient-to-tr from-[#7a1f1f] via-[#a52a2a] to-[#2a0d0d] shadow-2xl">
-                
-                {/* IMAGE CONTAINER */}
-                <div className="w-full h-full rounded-full overflow-hidden bg-[#1a0505] flex items-center justify-center border-2 border-white/5">
-                  <img
-                    src="/public/Aneesa.jpg"
-                    alt="Aneesa"
-                    className="w-full h-full object-cover object-top hover:scale-105 transition duration-700 ease-in-out"
-                    /* TIPS: 
-                       - Gunakan object-cover agar gambar memenuhi lingkaran.
-                       - Gunakan object-top jika kepala terpotong. 
-                       - Gunakan object-center jika ingin pas di tengah.
-                    */
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <p className="mt-6 text-[#e8b4b8]/90 text-lg leading-relaxed max-w-xl">
+            𝐀 𝐣𝐨𝐮𝐫𝐧𝐞𝐲 𝐨𝐟 𝐜𝐫𝐞𝐚𝐭𝐢𝐯𝐢𝐭𝐲, 𝐥𝐞𝐚𝐫𝐧𝐢𝐧𝐠, 𝐚𝐧𝐝 𝐩𝐚𝐬𝐬𝐢𝐨𝐧 𝐛𝐮𝐢𝐥𝐭 𝐰𝐢𝐭𝐡 𝐞𝐥𝐞𝐠𝐚𝐧𝐭 𝐝𝐞𝐬𝐢𝐠𝐧 𝐚𝐧𝐝 𝐦𝐞𝐚𝐧𝐢𝐧𝐠𝐟𝐮𝐥 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞𝐬.
+          </p>
 
-          {/* TEXT */}
-          <div className="text-center md:text-left order-2 md:order-1">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <span className="inline-block px-5 py-2 rounded-full 
+          <div className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start">
+            <button
+              onClick={scrollToAbout}
+              className="px-10 py-4 rounded-full font-bold text-white
               bg-gradient-to-r from-[#7a1f1f] to-[#4a1414]
-              text-white text-xs font-bold mb-6 tracking-[0.2em] shadow-lg uppercase">
-                ✨ Welcome to my world ✨
-              </span>
+              hover:shadow-[0_0_25px_rgba(122,31,31,0.6)]
+              transition-all duration-300"
+            >
+              🚀 Explore Work
+            </button>
 
-              <h1 className="text-5xl md:text-7xl font-black leading-tight text-white">
-                <span className="opacity-90">Aneesa's</span>
-                <br />
-                <span className="bg-gradient-to-r from-[#ff4d4d] via-[#a52a2a] to-[#7a1f1f] bg-clip-text text-transparent">
-                  Portfolio
-                </span>
-              </h1>
-
-              <p className="mt-6 max-w-xl text-lg text-white/70 leading-relaxed">
-                🍷 Every small project is a step toward
-                <span className="text-[#ff4d4d] font-semibold"> creativity, elegance, </span>
-                and building a meaningful digital journey.
-              </p>
-
-              <div className="flex flex-wrap gap-4 mt-10 justify-center md:justify-start">
-                <button
-                  onClick={scrollToAbout}
-                  className="px-10 py-4 rounded-full text-white font-bold 
-                  bg-[#7a1f1f] hover:bg-[#a52a2a] shadow-[0_0_20px_rgba(122,31,31,0.4)] 
-                  transition-all active:scale-95"
-                >
-                  🚀 Explore Work
-                </button>
-
-                <a
-                  href="#"
-                  className="px-10 py-4 rounded-full font-bold text-white 
-                  bg-white/5 backdrop-blur-md border border-white/10 
-                  hover:bg-white/10 transition-all"
-                >
-                  💌 Let's Talk
-                </a>
-              </div>
-            </motion.div>
+            <a
+              href="#"
+              className="px-10 py-4 rounded-full font-bold text-[#e8b4b8]
+              bg-white/5 backdrop-blur-xl border border-[#7a1f1f]/30
+              hover:bg-white/10 transition-all"
+            >
+              💌 Contact
+            </a>
           </div>
+        </motion.div>
 
-        </div>
+        {/* IMAGE SECTION (TIDAK DIUBAH STYLE FRAME-NYA) */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="flex justify-center md:justify-end"
+        >
+          <div className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[460px] lg:h-[460px]">
+
+            {/* glow belakang (tidak ganggu frame) */}
+            <div className="absolute inset-0 rounded-full blur-[120px] opacity-60 
+            bg-gradient-to-r from-[#7a1f1f] via-[#b76e79] to-[#f5c6c9] scale-125" />
+
+            {/* FOTO FRAME - TIDAK DIUBAH */}
+            <div className="relative w-full h-full rounded-full overflow-hidden">
+              <img
+                src="/Aneesa.jpg"
+                alt="Aneesa"
+                className="w-full h-full object-cover object-[50%_30%] 
+                scale-110 hover:scale-125 transition duration-700"
+              />
+
+              <div className="absolute inset-0 rounded-full 
+              bg-[radial-gradient(circle,transparent_55%,rgba(20,3,3,0.9)_100%)]" />
+            </div>
+          </div>
+        </motion.div>
+
       </div>
 
-      {/* SCROLL ICON */}
+      {/* SCROLL BUTTON */}
       <motion.button
         onClick={scrollToAbout}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 p-3 rounded-full 
-        bg-white/5 backdrop-blur-md border border-white/10 shadow-md z-30"
-        animate={{ y: [0, 12, 0] }}
-        transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 p-3 rounded-full 
+        bg-white/5 backdrop-blur-xl border border-[#7a1f1f]/30"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
       >
-        <ArrowDown className="text-white/60 w-6 h-6" />
+        <ArrowDown className="text-[#e8b4b8] w-6 h-6" />
       </motion.button>
+
     </section>
   );
 }

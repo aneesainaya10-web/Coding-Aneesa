@@ -1,176 +1,135 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone } from "lucide-react";
 
-type FormDataType = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
+const skills = {
+  ipa: [
+    { name: "Mathematics", level: 98 },
+    { name: "Biology", level: 97 },
+  ],
+  ips: [
+    { name: "History", level: 98 },
+    { name: "Sociology", level: 96 },
+  ],
+  olahraga: [
+    { name: "Running", level: 92 },
+    { name: "Fitness", level: 90 },
+  ],
 };
 
-export default function ContactSection() {
-  const [formData, setFormData] = useState<FormDataType>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      alert("Pesan berhasil dikirim ✨");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setIsSubmitting(false);
-    }, 1000);
-  };
-
-  const contactInfo = [
-    {
-      icon: Mail,
-      label: "My Email",
-      value: "aneesainaya10@gmail.com",
-      href: "mailto:aneesainaya10@gmail.com",
-    },
-    {
-      icon: Phone,
-      label: "Call",
-      value: "+62 82147777392",
-      href: "https://wa.me/6282147777392",
-    },
-    {
-      icon: MapPin,
-      label: "Location",
-      value: "Banda Aceh, Indonesia",
-      href: "#",
-    },
-  ];
-
+function SkillBar({ name, level, delay }) {
   return (
-    <section
-      id="contact"
-      className="relative py-20 md:py-32 overflow-hidden bg-white"
+    <motion.div
+      initial={{ opacity: 0, x: -30 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      className="space-y-2"
     >
-      {/* 🍷 WINE GLOW BACKGROUND */}
-      <div className="absolute inset-0">
-        <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-red-900/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-120px] right-[-100px] w-[400px] h-[400px] bg-red-800/20 rounded-full blur-3xl"></div>
+      <div className="flex justify-between text-sm">
+        <span className="text-[#f8d7da]">{name}</span>
+        <span className="text-[#cfa3a9]">{level}%</span>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        {/* TITLE */}
+      <div className="h-2 bg-[#2a0a0a] rounded-full overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ width: 0 }}
+          whileInView={{ width: `${level}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: delay + 0.2 }}
+          className="h-full rounded-full 
+          bg-gradient-to-r from-[#7a1f1f] via-[#b76e79] to-[#f5c6c9]
+          shadow-[0_0_12px_rgba(183,110,121,0.5)]"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function SkillsSection() {
+  return (
+    <section className="relative py-24 md:py-32 overflow-hidden">
+
+      {/* BACKGROUND (deep wine) */}
+      <div className="absolute inset-0 -z-20 
+      bg-gradient-to-b from-[#140303] via-[#2a0a0a] to-[#140303]" />
+
+      {/* GLOW (wine fog effect) */}
+      <div className="absolute w-[500px] h-[500px] bg-[#7a1f1f]/25 rounded-full blur-[160px] top-[-150px] left-[-100px]" />
+      <div className="absolute w-[400px] h-[400px] bg-[#4a1414]/30 rounded-full blur-[140px] bottom-[-120px] right-[-80px]" />
+
+      <div className="container mx-auto px-4 relative z-10">
+
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-20"
         >
-          <span className="text-red-700 font-medium mb-2 block">
-            Contact
+          <span className="inline-block px-5 py-2 rounded-full 
+          bg-gradient-to-r from-[#4a1414] to-[#2a0a0a]
+          text-[#e8b4b8] text-xs font-bold tracking-[0.2em] mb-6 uppercase shadow-lg">
+            ✨ 𝐌𝐲 𝐒𝐤𝐢𝐥𝐥𝐬 ✨
           </span>
 
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-red-950">
-            Get In Touch 🍷
+          <h2 className="text-4xl md:text-6xl font-black text-[#f8d7da]">
+            𝑨𝒄𝒂𝒅𝒆𝒎𝒊𝒄{" "}
+            <span className="bg-gradient-to-r from-[#b76e79] via-[#e8b4b8] to-[#f5c6c9] bg-clip-text text-transparent">
+               𝑺𝒌𝒊𝒍𝒍𝒔
+            </span>
           </h2>
 
-          <div className="w-20 h-1 bg-red-700 mx-auto rounded-full" />
+          <div className="w-24 h-1 mt-6 mx-auto rounded-full 
+          bg-gradient-to-r from-[#7a1f1f] to-[#f5c6c9]" />
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* LEFT */}
-          <div className="space-y-6">
-            {contactInfo.map((info, i) => (
-              <a
-                key={i}
-                href={info.href}
-                className="flex items-center gap-4 p-4 
-                bg-white/60 backdrop-blur-md border border-red-200 
-                rounded-xl hover:bg-red-50 transition-all group shadow-sm"
-              >
-                <div className="p-3 bg-red-100 rounded-lg group-hover:bg-red-200 transition">
-                  <info.icon className="text-red-800 w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-red-600 text-sm">{info.label}</p>
-                  <p className="text-red-900 font-medium">
-                    {info.value}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
+        {/* GRID */}
+        <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
 
-          {/* RIGHT FORM */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5 p-6 
-            bg-white/70 backdrop-blur-md border border-red-200 
-            rounded-2xl shadow-lg"
-          >
-            <input
-              name="name"
-              placeholder="Your name✨"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg 
-              bg-white border border-red-200 
-              focus:outline-none focus:ring-2 focus:ring-red-400"
-            />
-
-            <input
-              name="email"
-              type="email"
-              placeholder="Your email📩"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg 
-              bg-white border border-red-200 
-              focus:outline-none focus:ring-2 focus:ring-red-400"
-            />
-
-            <input
-              name="subject"
-              placeholder="Subject 💬"
-              value={formData.subject}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg 
-              bg-white border border-red-200 
-              focus:outline-none focus:ring-2 focus:ring-red-400"
-            />
-
-            <textarea
-              name="message"
-              placeholder="Your messages 🚀"
-              value={formData.message}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg 
-              bg-white border border-red-200 
-              min-h-[150px] 
-              focus:outline-none focus:ring-2 focus:ring-red-400"
-            />
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 rounded-xl 
-              bg-red-800 hover:bg-red-900 
-              text-white font-semibold tracking-wide
-              transition-all duration-300 shadow-md"
+          {[
+            { title: "IPA", icon: "⚗️", data: skills.ipa },
+            { title: "IPS", icon: "💰", data: skills.ips },
+            { title: "Olahraga", icon: "🏃‍♂️", data: skills.olahraga },
+          ].map((section, i) => (
+            <motion.div
+              key={section.title}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.2 }}
+              className="p-7 rounded-2xl 
+              bg-gradient-to-b from-[#2a0a0a]/80 to-[#140303]/90
+              backdrop-blur-xl 
+              border border-[#7a1f1f]/30
+              shadow-[0_10px_50px_rgba(0,0,0,0.7)]
+              hover:shadow-[0_0_50px_rgba(122,31,31,0.5)]
+              transition-all duration-500"
             >
-              {isSubmitting ? "Sending..." : "Send your messages"}
-            </button>
-          </form>
+              {/* HEADER CARD */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-xl 
+                bg-gradient-to-br from-[#7a1f1f]/40 to-[#2a0a0a]/40">
+                  <span className="text-2xl">{section.icon}</span>
+                </div>
+
+                <h3 className="text-xl font-bold text-[#f5c6c9]">
+                  {section.title}
+                </h3>
+              </div>
+
+              {/* SKILLS */}
+              <div className="space-y-5">
+                {section.data.map((skill, index) => (
+                  <SkillBar
+                    key={skill.name}
+                    {...skill}
+                    delay={index * 0.15}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          ))}
+
         </div>
       </div>
     </section>

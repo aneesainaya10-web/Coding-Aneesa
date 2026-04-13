@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun, Menu, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -39,10 +39,10 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'backdrop-blur-xl shadow-lg' : ''
+        isScrolled ? 'backdrop-blur-xl shadow-2xl border-b border-white/10' : ''
       }`}
     >
-      {/* 🍷 BACKGROUND */}
+      {/* GRADIENT BACKGROUND */}
       <div
         className={`absolute inset-0 -z-10 ${
           isDark
@@ -51,12 +51,8 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
         }`}
       />
 
-      {/* OVERLAY */}
-      <div
-        className={`absolute inset-0 -z-10 ${
-          isDark ? 'bg-black/50' : 'bg-white/20'
-        }`}
-      />
+      {/* NOISE / GLOW EFFECT */}
+      <div className="absolute inset-0 -z-10 opacity-20 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.3),transparent_70%)]" />
 
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
@@ -68,17 +64,18 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
               e.preventDefault();
               scrollToSection('#home');
             }}
-            className={`font-display text-xl md:text-2xl font-bold cursor-pointer drop-shadow ${
+            className={`flex items-center gap-2 font-extrabold tracking-wide cursor-pointer ${
               isDark ? 'text-[#fca5a5]' : 'text-[#2a0d0d]'
             }`}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.08 }}
           >
-            Neesa's
+            <Sparkles className="w-5 h-5" />
+            <span className="text-xl md:text-2xl font-serif">Neesa's Portofolio 𐔌՞. .՞𐦯 </span>
           </motion.a>
 
-          {/* DESKTOP */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+          {/* DESKTOP MENU */}
+          <div className="hidden md:flex items-center gap-10">
+            {navItems.map((item, index) => (
               <motion.a
                 key={item.label}
                 href={item.href}
@@ -86,14 +83,17 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                   e.preventDefault();
                   scrollToSection(item.href);
                 }}
-                className={`font-medium transition cursor-pointer ${
+                className={`relative font-medium text-sm uppercase tracking-widest transition ${
                   isDark
-                    ? 'text-[#fca5a5] hover:text-[#fecaca]'
+                    ? 'text-[#fca5a5] hover:text-white'
                     : 'text-[#2a0d0d] hover:text-[#7a1f1f]'
                 }`}
-                whileHover={{ y: -2 }}
+                whileHover={{ y: -3 }}
               >
                 {item.label}
+
+                {/* UNDERLINE ANIMATION */}
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-current transition-all duration-300 group-hover:w-full" />
               </motion.a>
             ))}
 
@@ -102,7 +102,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="rounded-full bg-black/10 hover:bg-black/20"
+              className="rounded-full bg-white/10 hover:bg-white/20 backdrop-blur"
             >
               <AnimatePresence mode="wait">
                 {isDark ? (
@@ -153,14 +153,14 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className={`md:hidden backdrop-blur-xl ${
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`md:hidden backdrop-blur-xl border-t border-white/10 ${
               isDark ? 'bg-black/80' : 'bg-[#7a1f1f]/90'
             }`}
           >
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+            <div className="container mx-auto px-4 py-6 flex flex-col gap-5">
               {navItems.map((item) => (
                 <a
                   key={item.label}
@@ -169,10 +169,10 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                     e.preventDefault();
                     scrollToSection(item.href);
                   }}
-                  className={`font-medium py-2 ${
+                  className={`text-lg font-semibold tracking-wide transition ${
                     isDark
-                      ? 'text-[#fca5a5] hover:text-[#fecaca]'
-                      : 'text-[#2a0d0d] hover:text-[#ffe4e6]'
+                      ? 'text-[#fca5a5] hover:text-white'
+                      : 'text-white hover:text-[#ffe4e6]'
                   }`}
                 >
                   {item.label}
